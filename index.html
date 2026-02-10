@@ -76,37 +76,19 @@
       overflow:hidden;
     }
 
-    .badge{
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      font-weight:600;
-      letter-spacing:.2px;
-      color:var(--muted);
-      border:1px solid #ffffff24;
-      padding:10px 14px;
-      border-radius:999px;
-      background:#ffffff0a;
-    }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: var(--accent);
-      box-shadow: 0 0 24px #ff4d8d90;
-    }
-
     .grid{
       display:grid;
       grid-template-columns: 1.1fr .9fr;
       gap:20px;
       align-items:center;
-      margin-top:18px;
+      margin-top:6px;
     }
     @media (max-width: 760px){
       .grid{grid-template-columns:1fr}
     }
 
     h1{
-      margin: 14px 0 10px;
+      margin: 8px 0 10px;
       font-size: clamp(28px, 4vw, 44px);
       line-height:1.08;
     }
@@ -209,6 +191,7 @@
       flex-wrap:wrap;
       align-items:center;
       position:relative;
+      min-height: 52px;
     }
     .yes{
       background: linear-gradient(180deg, #5cff9a, var(--yes));
@@ -232,12 +215,6 @@
       color: var(--text);
     }
     .result.show{ display:block; }
-
-    .footer{
-      margin-top:18px;
-      color:#ffffff80;
-      font-size: 12px;
-    }
 
     /* confetti hearts on YES */
     .burst{
@@ -278,12 +255,10 @@
 
   <main class="shell">
     <section class="stage" aria-live="polite">
-      <span class="badge"><span class="dot"></span> interactive valentine card</span>
-
       <div class="grid">
         <div>
-          <h1 id="headline">I made you something 🫶</h1>
-          <p id="subtext">Click the card to open it. (It’s lowkey cheesy, sorry not sorry.)</p>
+          <h1 id="headline">Okay… real question 😳</h1>
+          <p id="subtext">Ano kaya ’to? 🤭</p>
 
           <div class="btnRow">
             <button class="primary" id="openBtn">Open the card</button>
@@ -292,8 +267,11 @@
 
           <div class="proposal" id="proposal">
             <div class="questionBox">
-              <h2 class="questionTitle" id="question">Will you be my Valentine? 💘</h2>
-              <div class="hint" id="hint">Choose wisely…</div>
+              <h2 class="questionTitle" id="question">
+                Will you be my Valentine and boyfriend?<br>
+                Be my food buddy forever! 💘
+              </h2>
+              <div class="hint" id="hint">Pick one 🙂</div>
 
               <div class="actions" id="actions">
                 <button class="yes" id="yesBtn">YES 💖</button>
@@ -303,14 +281,12 @@
               <div class="result" id="result"></div>
             </div>
           </div>
-
-          <div class="footer">Tip: If you want, I can customize names + a personal message.</div>
         </div>
 
         <div class="cardFace" id="card">
           <div class="bigHeart" aria-hidden="true"></div>
-          <div style="font-weight:800; font-size:18px;">To: <span id="toName">you</span></div>
-          <div style="color: var(--muted);">From: <span id="fromName">me</span></div>
+          <div style="font-weight:800; font-size:18px;">To: <span id="toName">Anne</span></div>
+          <div style="color: var(--muted);">From: <span id="fromName">Adriane</span></div>
           <div style="margin-top:10px; color:#ffffffd0;">
             Click “Open the card” 😌
           </div>
@@ -340,7 +316,6 @@
       h.style.width = size + "px";
       h.style.height = size + "px";
       h.style.opacity = 0.5 + Math.random()*0.5;
-      // adjust pseudo sizes using CSS variables via scale:
       h.style.transform = `rotate(45deg) scale(${size/18})`;
       heartsWrap.appendChild(h);
     }
@@ -365,8 +340,6 @@
   function openCard(){
     if(opened) return;
     opened = true;
-    headline.textContent = "Okay… real question 😳";
-    subtext.textContent = "I’m being serious (kinda).";
     proposal.classList.add("active");
     result.classList.remove("show");
     result.innerHTML = "";
@@ -375,15 +348,15 @@
   function reset(){
     opened = false;
     noDodges = 0;
-    headline.textContent = "I made you something 🫶";
-    subtext.textContent = "Click the card to open it. (It’s lowkey cheesy, sorry not sorry.)";
+    headline.textContent = "Okay… real question 😳";
+    subtext.textContent = "Ano kaya ’to? 🤭";
     proposal.classList.remove("active");
     result.classList.remove("show");
     result.innerHTML = "";
-    // put No button back
     noBtn.style.position = "relative";
     noBtn.style.left = "0px";
     noBtn.style.top = "0px";
+    document.getElementById("hint").textContent = "Pick one 🙂";
   }
 
   openBtn.addEventListener("click", openCard);
@@ -396,7 +369,6 @@
 
     noDodges++;
 
-    // Make it absolute within actions box after first dodge
     const rect = actions.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
 
@@ -404,8 +376,6 @@
 
     const maxX = rect.width - btnRect.width;
     const maxY = rect.height - btnRect.height;
-
-    // If actions box is short, allow a bit more vertical room
     const yRoom = Math.max(maxY, 28);
 
     const x = Math.random() * Math.max(maxX, 10);
@@ -417,9 +387,9 @@
     if(noDodges === 1){
       document.getElementById("hint").textContent = "Try again 😌";
     } else if(noDodges === 3){
-      document.getElementById("hint").textContent = "Bro it’s literally not letting you 😭";
+      document.getElementById("hint").textContent = "Di ka papayagan 😭";
     } else if(noDodges === 6){
-      document.getElementById("hint").textContent = "Just press YES 🤨";
+      document.getElementById("hint").textContent = "YES na kasi 🙂";
     }
   }
 
@@ -448,7 +418,6 @@
 
       m.style.setProperty("--dx", dx + "px");
       m.style.setProperty("--dy", dy + "px");
-      m.style.opacity = 0.9;
 
       burstWrap.appendChild(m);
     }
@@ -460,24 +429,23 @@
     if(!opened) openCard();
     heartBurst();
 
+    document.getElementById("hint").textContent = "Yayyy 🥹💖";
+
     result.classList.add("show");
     result.innerHTML = `
-      <div style="font-weight:900; font-size:18px; margin-bottom:6px;">YAYYY 😭💖</div>
-      <div style="color:#e9e2ffcc; line-height:1.5;">
-        You just made my whole day.<br>
-        Screenshot this and send it to me as proof 😌
+      <div style="font-weight:900; font-size:18px; margin-bottom:6px;">YAYYY 🥹💘</div>
+      <div style="color:#e9e2ffcc; line-height:1.55; margin-bottom:10px;">
+        You just made my whole day.
+      </div>
+      <div style="border-top:1px solid #ffffff24; padding-top:10px; color:#ffffffd8; line-height:1.6;">
+        <div style="font-weight:800; margin-bottom:6px;">Little note:</div>
+        I’m sorry for everything we’ve been through these past weeks.
+        I want to do better—really better—and never be the reason your heart hurts.
+        I just want to see you happy, because your happiness is what makes me happy too.
+        I love you with all my heart.
       </div>
     `;
-
-    document.getElementById("hint").textContent = "Correct answer ✅";
   });
-
-  // Optional: let you customize via query string like ?to=Name&from=Name
-  const params = new URLSearchParams(location.search);
-  const to = params.get("to");
-  const from = params.get("from");
-  if(to) document.getElementById("toName").textContent = to;
-  if(from) document.getElementById("fromName").textContent = from;
 </script>
 </body>
 </html>
