@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Be My Valentine?</title>
+  <style>
+    :root{
+      --bg1:#0f1020;
+      --bg2:#1a0f2b;
+      --card:#ffffff10;
+      --card2:#ffffff18;
+      --text:#f7f3ff;
+      --muted:#d8cff6;
+      --yes:#22c55e;
+      --no:#ef4444;
+      --accent:#ff4d8d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% 20%, #ff4d8d25, transparent 60%),
+                  radial-gradient(900px 500px at 80% 30%, #a855f725, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    /* floating hearts */
+    .hearts{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.9;
+      filter: drop-shadow(0 12px 22px rgba(0,0,0,.25));
+    }
+    .heart{
+      position:absolute;
+      width:18px; height:18px;
+      transform: rotate(45deg);
+      background: var(--accent);
+      border-radius: 4px;
+      animation: floatUp linear infinite;
+    }
+    .heart:before, .heart:after{
+      content:"";
+      position:absolute;
+      width:18px; height:18px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+    .heart:before{ left:-9px; top:0; }
+    .heart:after{ left:0; top:-9px; }
+    @keyframes floatUp{
+      from{ transform: translateY(20px) rotate(45deg); opacity:0; }
+      10%{opacity:1}
+      to{ transform: translateY(-110svh) rotate(45deg); opacity:0; }
+    }
+
+    .shell{
+      width:min(880px, 92vw);
+      padding:24px;
+    }
+
+    .stage{
+      border:1px solid #ffffff24;
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border-radius: 26px;
+      padding: 26px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:20px;
+      align-items:center;
+      margin-top:6px;
+    }
+    @media (max-width: 760px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    h1{
+      margin: 8px 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height:1.08;
+    }
+    p{
+      margin:0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height:1.5;
+    }
+
+    .cardFace{
+      border:1px solid #ffffff24;
+      background:#0b0b1620;
+      border-radius:22px;
+      padding:22px;
+      min-height: 220px;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .bigHeart{
+      width:80px;height:80px;
+      margin-bottom:8px;
+      transform: rotate(45deg);
+      background: var(--accent);
+      border-radius: 14px;
+      position:relative;
+      box-shadow: 0 18px 40px #ff4d8d35;
+      align-self:flex-start;
+    }
+    .bigHeart:before, .bigHeart:after{
+      content:"";
+      position:absolute;
+      width:80px;height:80px;
+      background: var(--accent);
+      border-radius:50%;
+    }
+    .bigHeart:before{ left:-40px; top:0; }
+    .bigHeart:after{ left:0; top:-40px; }
+
+    .btnRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    button{
+      border:0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight:700;
+      cursor:pointer;
+      color:#0b1020;
+      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+    .primary{
+      background: linear-gradient(180deg, #ff79ad, #ff4d8d);
+      color:#13081a;
+    }
+    .secondary{
+      background:#ffffff12;
+      border:1px solid #ffffff24;
+      color: var(--text);
+    }
+
+    /* Proposal screen */
+    .proposal{
+      display:none;
+      margin-top:10px;
+    }
+    .proposal.active{ display:block; }
+
+    .questionBox{
+      margin-top:14px;
+      border:1px solid #ffffff24;
+      background:#ffffff0a;
+      border-radius:22px;
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .questionTitle{
+      font-size: clamp(22px, 3.2vw, 34px);
+      margin: 0 0 8px;
+    }
+    .hint{
+      font-size: 14px;
+      color: #e9e2ffcc;
+    }
+
+    .actions{
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      position:relative;
+      min-height: 52px;
+    }
+    .yes{
+      background: linear-gradient(180deg, #5cff9a, var(--yes));
+      color:#06210f;
+      padding: 12px 18px;
+    }
+    .no{
+      background: linear-gradient(180deg, #ff8a8a, var(--no));
+      color:#2a0606;
+      padding: 12px 18px;
+      position:relative;
+    }
+
+    .result{
+      margin-top:14px;
+      display:none;
+      border:1px solid #ffffff24;
+      background:#0b0b1620;
+      border-radius:18px;
+      padding:14px 16px;
+      color: var(--text);
+    }
+    .result.show{ display:block; }
+
+    /* confetti hearts on YES */
+    .burst{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+    }
+    .burst.show{display:block;}
+    .mini{
+      position:absolute;
+      width:14px;height:14px;
+      transform: rotate(45deg);
+      background: var(--accent);
+      border-radius: 3px;
+      animation: pop 900ms ease-out forwards;
+    }
+    .mini:before, .mini:after{
+      content:"";
+      position:absolute;
+      width:14px;height:14px;
+      background: var(--accent);
+      border-radius:50%;
+    }
+    .mini:before{ left:-7px; top:0; }
+    .mini:after{ left:0; top:-7px; }
+    @keyframes pop{
+      0%{ transform: translate(0,0) rotate(45deg) scale(.8); opacity:0; }
+      10%{opacity:1}
+      100%{ transform: translate(var(--dx), var(--dy)) rotate(45deg) scale(1.2); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <div class="burst" id="burst"></div>
+
+  <main class="shell">
+    <section class="stage" aria-live="polite">
+      <div class="grid">
+        <div>
+          <h1 id="headline">Okay… real question 😳</h1>
+          <p id="subtext">Ano kaya ’to? 🤭</p>
+
+          <div class="btnRow">
+            <button class="primary" id="openBtn">Open the card</button>
+            <button class="secondary" id="resetBtn" title="Start over">Reset</button>
+          </div>
+
+          <div class="proposal" id="proposal">
+            <div class="questionBox">
+              <h2 class="questionTitle" id="question">
+                Will you be my Valentine and boyfriend?<br>
+                Be my food buddy forever! 💘
+              </h2>
+              <div class="hint" id="hint">Pick one 🙂</div>
+
+              <div class="actions" id="actions">
+                <button class="yes" id="yesBtn">YES 💖</button>
+                <button class="no" id="noBtn">no 😶</button>
+              </div>
+
+              <div class="result" id="result"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardFace" id="card">
+          <div class="bigHeart" aria-hidden="true"></div>
+          <div style="font-weight:800; font-size:18px;">To: <span id="toName">Anne</span></div>
+          <div style="color: var(--muted);">From: <span id="fromName">Adriane</span></div>
+          <div style="margin-top:10px; color:#ffffffd0;">
+            Click “Open the card” 😌
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // ===== Floating background hearts =====
+  const heartsWrap = document.getElementById("hearts");
+  const burstWrap = document.getElementById("burst");
+
+  function makeBgHearts(count = 18){
+    heartsWrap.innerHTML = "";
+    for(let i=0;i<count;i++){
+      const h = document.createElement("div");
+      h.className = "heart";
+      const left = Math.random()*100;
+      const delay = Math.random()*6;
+      const dur = 6 + Math.random()*8;
+      const size = 10 + Math.random()*14;
+      h.style.left = left + "vw";
+      h.style.bottom = (-10 - Math.random()*30) + "px";
+      h.style.animationDuration = dur + "s";
+      h.style.animationDelay = delay + "s";
+      h.style.width = size + "px";
+      h.style.height = size + "px";
+      h.style.opacity = 0.5 + Math.random()*0.5;
+      h.style.transform = `rotate(45deg) scale(${size/18})`;
+      heartsWrap.appendChild(h);
+    }
+  }
+  makeBgHearts();
+
+  // ===== UI logic =====
+  const openBtn = document.getElementById("openBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const proposal = document.getElementById("proposal");
+  const headline = document.getElementById("headline");
+  const subtext = document.getElementById("subtext");
+  const result = document.getElementById("result");
+
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn  = document.getElementById("noBtn");
+  const actions = document.getElementById("actions");
+
+  let opened = false;
+  let noDodges = 0;
+
+  function openCard(){
+    if(opened) return;
+    opened = true;
+    proposal.classList.add("active");
+    result.classList.remove("show");
+    result.innerHTML = "";
+  }
+
+  function reset(){
+    opened = false;
+    noDodges = 0;
+    headline.textContent = "Okay… real question 😳";
+    subtext.textContent = "Ano kaya ’to? 🤭";
+    proposal.classList.remove("active");
+    result.classList.remove("show");
+    result.innerHTML = "";
+    noBtn.style.position = "relative";
+    noBtn.style.left = "0px";
+    noBtn.style.top = "0px";
+    document.getElementById("hint").textContent = "Pick one 🙂";
+  }
+
+  openBtn.addEventListener("click", openCard);
+  document.getElementById("card").addEventListener("click", openCard);
+  resetBtn.addEventListener("click", reset);
+
+  // ===== "No" button dodge =====
+  function dodgeNo(){
+    if(!opened) openCard();
+
+    noDodges++;
+
+    const rect = actions.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+
+    noBtn.style.position = "absolute";
+
+    const maxX = rect.width - btnRect.width;
+    const maxY = rect.height - btnRect.height;
+    const yRoom = Math.max(maxY, 28);
+
+    const x = Math.random() * Math.max(maxX, 10);
+    const y = (Math.random() * yRoom) - (yRoom/2);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+
+    if(noDodges === 1){
+      document.getElementById("hint").textContent = "Try again 😌";
+    } else if(noDodges === 3){
+      document.getElementById("hint").textContent = "Di ka papayagan 😭";
+    } else if(noDodges === 6){
+      document.getElementById("hint").textContent = "YES na kasi 🙂";
+    }
+  }
+
+  noBtn.addEventListener("mouseenter", dodgeNo);
+  noBtn.addEventListener("click", dodgeNo);
+
+  // ===== YES action =====
+  function heartBurst(){
+    burstWrap.innerHTML = "";
+    burstWrap.classList.add("show");
+
+    const cx = window.innerWidth * 0.5;
+    const cy = window.innerHeight * 0.4;
+
+    const pieces = 26;
+    for(let i=0;i<pieces;i++){
+      const m = document.createElement("div");
+      m.className = "mini";
+      m.style.left = cx + "px";
+      m.style.top  = cy + "px";
+
+      const angle = (Math.PI * 2) * (i / pieces);
+      const dist = 120 + Math.random()*220;
+      const dx = Math.cos(angle) * dist + (Math.random()*40 - 20);
+      const dy = Math.sin(angle) * dist + (Math.random()*40 - 20);
+
+      m.style.setProperty("--dx", dx + "px");
+      m.style.setProperty("--dy", dy + "px");
+
+      burstWrap.appendChild(m);
+    }
+
+    setTimeout(()=> burstWrap.classList.remove("show"), 950);
+  }
+
+  yesBtn.addEventListener("click", () => {
+    if(!opened) openCard();
+    heartBurst();
+
+    document.getElementById("hint").textContent = "Yayyy 🥹💖";
+
+    result.classList.add("show");
+    result.innerHTML = `
+      <div style="font-weight:900; font-size:18px; margin-bottom:6px;">YAYYY 🥹💘</div>
+      <div style="color:#e9e2ffcc; line-height:1.55; margin-bottom:10px;">
+        You just made my whole day.
+      </div>
+      <div style="border-top:1px solid #ffffff24; padding-top:10px; color:#ffffffd8; line-height:1.6;">
+        <div style="font-weight:800; margin-bottom:6px;">Little note:</div>
+        I’m sorry for everything we’ve been through these past weeks.
+        I want to do better—really better—and never be the reason your heart hurts.
+        I just want to see you happy, because your happiness is what makes me happy too.
+        I love you with all my heart.
+      </div>
+    `;
+  });
+</script>
+</body>
+</html>
