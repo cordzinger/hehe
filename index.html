@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Be My Valentine?</title>
+  <title>Got you a little something</title>
   <style>
     :root{
       --bg1:#0f1020;
@@ -61,10 +61,7 @@
       to{ transform: translateY(-110svh) rotate(45deg); opacity:0; }
     }
 
-    .shell{
-      width:min(880px, 92vw);
-      padding:24px;
-    }
+    .shell{ width:min(920px, 92vw); padding:24px; }
 
     .stage{
       border:1px solid #ffffff24;
@@ -78,7 +75,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns: 1.15fr .85fr;
       gap:20px;
       align-items:center;
       margin-top:6px;
@@ -96,7 +93,45 @@
       margin:0;
       color: var(--muted);
       font-size: 16px;
-      line-height:1.5;
+      line-height:1.55;
+      white-space: pre-line;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    button{
+      border:0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+    .primary{
+      background: linear-gradient(180deg, #ff79ad, #ff4d8d);
+      color:#13081a;
+    }
+    .secondary{
+      background:#ffffff12;
+      border:1px solid #ffffff24;
+      color: var(--text);
+    }
+    .yes{
+      background: linear-gradient(180deg, #5cff9a, var(--yes));
+      color:#06210f;
+      padding: 12px 18px;
+    }
+    .no{
+      background: linear-gradient(180deg, #ff8a8a, var(--no));
+      color:#2a0606;
+      padding: 12px 18px;
+      position:relative;
     }
 
     .cardFace{
@@ -111,7 +146,6 @@
       justify-content:center;
       gap:10px;
     }
-
     .bigHeart{
       width:80px;height:80px;
       margin-bottom:8px;
@@ -132,56 +166,21 @@
     .bigHeart:before{ left:-40px; top:0; }
     .bigHeart:after{ left:0; top:-40px; }
 
-    .btnRow{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:16px;
-    }
-    button{
-      border:0;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-weight:700;
-      cursor:pointer;
-      color:#0b1020;
-      transition: transform .08s ease, filter .15s ease;
-      user-select:none;
-    }
-    button:active{ transform: translateY(1px) scale(.99); }
-    .primary{
-      background: linear-gradient(180deg, #ff79ad, #ff4d8d);
-      color:#13081a;
-    }
-    .secondary{
-      background:#ffffff12;
-      border:1px solid #ffffff24;
-      color: var(--text);
-    }
-
-    /* Proposal screen */
-    .proposal{
-      display:none;
-      margin-top:10px;
-    }
-    .proposal.active{ display:block; }
-
-    .questionBox{
+    .panel{
       margin-top:14px;
       border:1px solid #ffffff24;
       background:#ffffff0a;
       border-radius:22px;
       padding:18px;
-      position:relative;
-      overflow:hidden;
+      display:none;
     }
-    .questionTitle{
-      font-size: clamp(22px, 3.2vw, 34px);
-      margin: 0 0 8px;
-    }
-    .hint{
-      font-size: 14px;
-      color: #e9e2ffcc;
+    .panel.active{ display:block; }
+
+    .panelTitle{
+      font-size: clamp(20px, 3vw, 32px);
+      font-weight:900;
+      margin:0 0 10px;
+      line-height:1.15;
     }
 
     .actions{
@@ -193,16 +192,10 @@
       position:relative;
       min-height: 52px;
     }
-    .yes{
-      background: linear-gradient(180deg, #5cff9a, var(--yes));
-      color:#06210f;
-      padding: 12px 18px;
-    }
-    .no{
-      background: linear-gradient(180deg, #ff8a8a, var(--no));
-      color:#2a0606;
-      padding: 12px 18px;
-      position:relative;
+
+    .hint{
+      font-size: 14px;
+      color: #e9e2ffcc;
     }
 
     .result{
@@ -249,6 +242,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="hearts" id="hearts"></div>
   <div class="burst" id="burst"></div>
@@ -257,38 +251,69 @@
     <section class="stage" aria-live="polite">
       <div class="grid">
         <div>
-          <h1 id="headline">Okay… real question 😳</h1>
-          <p id="subtext">Ano kaya ’to? 🤭</p>
+          <h1 id="headline">Got you a little something</h1>
+          <p id="subtext">Click open when you’re ready 🤭</p>
 
           <div class="btnRow">
-            <button class="primary" id="openBtn">Open the card</button>
-            <button class="secondary" id="resetBtn" title="Start over">Reset</button>
+            <button class="primary" id="openBtn">Open</button>
+            <button class="secondary" id="resetBtn">Reset</button>
           </div>
 
-          <div class="proposal" id="proposal">
-            <div class="questionBox">
-              <h2 class="questionTitle" id="question">
-                Will you be my Valentine and boyfriend?<br>
-                Be my food buddy forever! 💘
-              </h2>
-              <div class="hint" id="hint">Pick one 🙂</div>
+          <!-- 1) Letter panel -->
+          <div class="panel" id="panelLetter">
+            <div class="panelTitle">Before anything…</div>
+            <p id="letterText">
+From the moment we first talked, you weren’t like other women, mahal. You really caught my attention.
+I wanted to get to know you more… like for real. I wanted us to be best friends first before we became lovers.
+You’re the only person who makes me feel like I can do anything. Pag ikaw kasama ko, ang lakas ko.
+You saw through the toughest parts of this steel heart—yung parts na nobody ever got through… but you did.
+You’re different, in a good way. You inspire me in everything I do.
+You push me to be better when I feel like I’m not doing enough.
+Even when I tried to push you away, you still gave me a reason to fight for us and to keep showing up.
+I love you, mahal ko, from the bottom of my heart.
+            </p>
 
-              <div class="actions" id="actions">
-                <button class="yes" id="yesBtn">YES 💖</button>
-                <button class="no" id="noBtn">no 😶</button>
-              </div>
-
-              <div class="result" id="result"></div>
+            <div class="btnRow">
+              <button class="primary" id="toValentineBtn">Continue</button>
             </div>
+          </div>
+
+          <!-- 2) Valentine panel -->
+          <div class="panel" id="panelValentine">
+            <div class="panelTitle">Will you be my Valentine? 💘</div>
+
+            <div class="hint" id="valHint" style="margin-top:6px;">Pick one 🙂</div>
+            <div class="actions" id="valActions">
+              <button class="yes" id="valYesBtn">YES 💖</button>
+              <button class="no" id="valNoBtn">no 😶</button>
+            </div>
+          </div>
+
+          <!-- 3) Boyfriend panel -->
+          <div class="panel" id="panelBoyfriend">
+            <div class="panelTitle">Ofc I didn’t forget… 😌</div>
+            <div class="hint" style="margin-top:6px;">One more question.</div>
+
+            <div class="panelTitle" style="margin-top:12px; font-size:clamp(18px,2.6vw,26px);">
+              Will you be my boyfriend, my only and forever?
+            </div>
+
+            <div class="actions">
+              <button class="yes" id="bfYesBtn1">YES 💚</button>
+              <button class="yes" id="bfYesBtn2">YES 💚</button>
+            </div>
+
+            <div class="result" id="finalResult"></div>
           </div>
         </div>
 
+        <!-- Right card -->
         <div class="cardFace" id="card">
           <div class="bigHeart" aria-hidden="true"></div>
-          <div style="font-weight:800; font-size:18px;">To: <span id="toName">Anne</span></div>
-          <div style="color: var(--muted);">From: <span id="fromName">Adriane</span></div>
+          <div style="font-weight:900; font-size:18px;">To: <span>Anne</span></div>
+          <div style="color: var(--muted); font-weight:700;">From: <span>Adriane</span></div>
           <div style="margin-top:10px; color:#ffffffd0;">
-            Click “Open the card” 😌
+            Click “Open” 😌
           </div>
         </div>
       </div>
@@ -296,7 +321,7 @@
   </main>
 
 <script>
-  // ===== Floating background hearts =====
+  // Floating background hearts
   const heartsWrap = document.getElementById("hearts");
   const burstWrap = document.getElementById("burst");
 
@@ -322,58 +347,70 @@
   }
   makeBgHearts();
 
-  // ===== UI logic =====
+  // Panels
+  const panelLetter = document.getElementById("panelLetter");
+  const panelValentine = document.getElementById("panelValentine");
+  const panelBoyfriend = document.getElementById("panelBoyfriend");
+  const finalResult = document.getElementById("finalResult");
+
+  // Buttons
   const openBtn = document.getElementById("openBtn");
   const resetBtn = document.getElementById("resetBtn");
-  const proposal = document.getElementById("proposal");
-  const headline = document.getElementById("headline");
-  const subtext = document.getElementById("subtext");
-  const result = document.getElementById("result");
+  const toValentineBtn = document.getElementById("toValentineBtn");
 
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn  = document.getElementById("noBtn");
-  const actions = document.getElementById("actions");
+  const valYesBtn = document.getElementById("valYesBtn");
+  const valNoBtn  = document.getElementById("valNoBtn");
+  const valActions = document.getElementById("valActions");
+  const valHint = document.getElementById("valHint");
 
-  let opened = false;
+  const bfYesBtn1 = document.getElementById("bfYesBtn1");
+  const bfYesBtn2 = document.getElementById("bfYesBtn2");
+
+  function showOnly(which){
+    [panelLetter, panelValentine, panelBoyfriend].forEach(p => p.classList.remove("active"));
+    which.classList.add("active");
+  }
+
+  function resetAll(){
+    finalResult.classList.remove("show");
+    finalResult.innerHTML = "";
+    valHint.textContent = "Pick one 🙂";
+    valNoBtn.style.position = "relative";
+    valNoBtn.style.left = "0px";
+    valNoBtn.style.top = "0px";
+    showOnly(panelLetter);
+  }
+
+  // Start with no panel shown until open
+  panelLetter.classList.remove("active");
+  panelValentine.classList.remove("active");
+  panelBoyfriend.classList.remove("active");
+
+  function openFlow(){
+    showOnly(panelLetter);
+  }
+  openBtn.addEventListener("click", openFlow);
+  document.getElementById("card").addEventListener("click", openFlow);
+
+  resetBtn.addEventListener("click", () => {
+    panelLetter.classList.remove("active");
+    panelValentine.classList.remove("active");
+    panelBoyfriend.classList.remove("active");
+    resetAll();
+  });
+
+  toValentineBtn.addEventListener("click", () => showOnly(panelValentine));
+
+  // Dodge the "no" on Valentine
   let noDodges = 0;
-
-  function openCard(){
-    if(opened) return;
-    opened = true;
-    proposal.classList.add("active");
-    result.classList.remove("show");
-    result.innerHTML = "";
-  }
-
-  function reset(){
-    opened = false;
-    noDodges = 0;
-    headline.textContent = "Okay… real question 😳";
-    subtext.textContent = "Ano kaya ’to? 🤭";
-    proposal.classList.remove("active");
-    result.classList.remove("show");
-    result.innerHTML = "";
-    noBtn.style.position = "relative";
-    noBtn.style.left = "0px";
-    noBtn.style.top = "0px";
-    document.getElementById("hint").textContent = "Pick one 🙂";
-  }
-
-  openBtn.addEventListener("click", openCard);
-  document.getElementById("card").addEventListener("click", openCard);
-  resetBtn.addEventListener("click", reset);
-
-  // ===== "No" button dodge =====
   function dodgeNo(){
-    if(!opened) openCard();
-
     noDodges++;
+    valActions.style.position = "relative";
 
-    const rect = actions.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
+    const rect = valActions.getBoundingClientRect();
+    const btnRect = valNoBtn.getBoundingClientRect();
 
-    noBtn.style.position = "absolute";
-
+    valNoBtn.style.position = "absolute";
     const maxX = rect.width - btnRect.width;
     const maxY = rect.height - btnRect.height;
     const yRoom = Math.max(maxY, 28);
@@ -381,22 +418,17 @@
     const x = Math.random() * Math.max(maxX, 10);
     const y = (Math.random() * yRoom) - (yRoom/2);
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top  = y + "px";
+    valNoBtn.style.left = x + "px";
+    valNoBtn.style.top  = y + "px";
 
-    if(noDodges === 1){
-      document.getElementById("hint").textContent = "Try again 😌";
-    } else if(noDodges === 3){
-      document.getElementById("hint").textContent = "Di ka papayagan 😭";
-    } else if(noDodges === 6){
-      document.getElementById("hint").textContent = "YES na kasi 🙂";
-    }
+    if(noDodges === 1) valHint.textContent = "Try again 😌";
+    else if(noDodges === 3) valHint.textContent = "Di ka papayagan 😭";
+    else if(noDodges === 6) valHint.textContent = "YES na kasi 🙂";
   }
+  valNoBtn.addEventListener("mouseenter", dodgeNo);
+  valNoBtn.addEventListener("click", dodgeNo);
 
-  noBtn.addEventListener("mouseenter", dodgeNo);
-  noBtn.addEventListener("click", dodgeNo);
-
-  // ===== YES action =====
+  // Heart burst
   function heartBurst(){
     burstWrap.innerHTML = "";
     burstWrap.classList.add("show");
@@ -418,34 +450,39 @@
 
       m.style.setProperty("--dx", dx + "px");
       m.style.setProperty("--dy", dy + "px");
-
       burstWrap.appendChild(m);
     }
-
     setTimeout(()=> burstWrap.classList.remove("show"), 950);
   }
 
-  yesBtn.addEventListener("click", () => {
-    if(!opened) openCard();
+  // Valentine YES -> go to boyfriend panel
+  valYesBtn.addEventListener("click", () => {
     heartBurst();
+    showOnly(panelBoyfriend);
+    finalResult.classList.remove("show");
+    finalResult.innerHTML = "";
+  });
 
-    document.getElementById("hint").textContent = "Yayyy 🥹💖";
-
-    result.classList.add("show");
-    result.innerHTML = `
-      <div style="font-weight:900; font-size:18px; margin-bottom:6px;">YAYYY 🥹💘</div>
+  // Boyfriend YES (either button) -> final note
+  function showFinal(){
+    heartBurst();
+    finalResult.classList.add("show");
+    finalResult.innerHTML = `
+      <div style="font-weight:950; font-size:18px; margin-bottom:6px;">YAYYY 🥹💘</div>
       <div style="color:#e9e2ffcc; line-height:1.55; margin-bottom:10px;">
         You just made my whole day.
       </div>
       <div style="border-top:1px solid #ffffff24; padding-top:10px; color:#ffffffd8; line-height:1.6;">
-        <div style="font-weight:800; margin-bottom:6px;">Little note:</div>
-        I’m sorry for everything we’ve been through these past weeks.
-        I want to do better—really better—and never be the reason your heart hurts.
+        <div style="font-weight:900; margin-bottom:6px;">Little note:</div>
+        I’m sorry for everything we’ve been through these past few weeks.
+        I want to do better—truly better—and never be the reason your heart hurts.
         I just want to see you happy, because your happiness is what makes me happy too.
         I love you with all my heart.
       </div>
     `;
-  });
+  }
+  bfYesBtn1.addEventListener("click", showFinal);
+  bfYesBtn2.addEventListener("click", showFinal);
 </script>
 </body>
 </html>
